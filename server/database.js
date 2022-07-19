@@ -41,15 +41,33 @@ const queryDB = (req, sql, args) => new Promise((resolve, reject) => {
     req.mysqlDb.query(sql, args, (err, rows) => {
         if (err)
             return reject(err);
-        rows.changedRows || rows.affectedRows || rows.insertId ? resolve(true) : resolve(rows);
+       // rows.changedRows || rows.affectedRows || rows.insertId ? resolve(true) : resolve(rows);
+       resolve(rows )
     });
 });
+
+const createTodoDB = (req, sql, args) => new Promise((resolve, reject) => {
+  let newId
+  req.mysqlDb.query(sql, args, async(err, rows) => {
+      if (err)
+          return reject(err);
+     // rows.changedRows || rows.affectedRows || rows.insertId ? resolve(true) : resolve(rows)
+     newId=rows.insertId
+     let newTodo 
+    await queryDB(req, "select * from todos where id = ?", newId).then(data => newTodo=data[0])
+    resolve(newTodo)
+    console.log(newTodo, "newTodo")
+
+  })
+});
+
 
 const root = {
   todos: (args, req) => queryDB(req, "select * from todos").then(data => data),
   todo: (args, req) => queryDB(req, "select * from todos where id = ?", [args.id]).then(data => data[0]),
   //updateUserInfo: (args, req) => queryDB(req, "update users SET ? where id = ?", [args, args.id]).then(data => data),
-  createTodo: (args, req) => queryDB(req, "insert into todos SET ?", args).then(data => data)
+  createTodo: (args, req) => createTodoDB(req, "insert into todos (Task, category) values(?,?);", Object.values(args.input))
+    .then(data => ({ ...data}) )
   //deleteUser: (args, req) => queryDB(req, "delete from users where id = ?", [args.id]).then(data => data)
 };
 
