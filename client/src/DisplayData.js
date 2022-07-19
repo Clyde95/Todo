@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {  useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import {gql} from 'apollo-boost'
+import TextField from "@material-ui/core/TextField"
     
 const QUERY_ALL_TASKS = gql `
     query GetAllTodos
@@ -50,16 +51,23 @@ function DisplayData () {
         return (
             <div>
                 <div>
-                    <input 
-                        type="text" 
-                        placeholder="Enter a Todo Item" 
+                    <TextField 
+                        id="outlined-basic" 
+                        label="Enter a Task" 
+                        variant="outlined" 
+                        size="small"
+                        type="text"  
                         onChange={ (event) => { 
                             setTask(event.target.value);
                         }}
                     />
-                    <input 
+                    <TextField 
+                        id="outlined-basic" 
+                        label="Enter category" 
+                        variant="outlined" 
+                        size="small"
                         type="text" 
-                        placeholder="Enter Category"
+                        //placeholder="Enter Category"
                         onChange={ (event) => { 
                             setcategory(event.target.value); }}
                     />
@@ -70,6 +78,7 @@ function DisplayData () {
                                 input: {Task: Task, category: category},
                             }
                         });
+                        
                         refetch();
                     }}
                     >
