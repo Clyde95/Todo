@@ -2,6 +2,31 @@ import React, { useState } from "react";
 import {  useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import {gql} from 'apollo-boost'
 import TextField from "@material-ui/core/TextField"
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add"
+import Modal, { Card, Container } from "@material-ui/core";
+import Typography from '@mui/material/Typography';
+import Box from "@material-ui/core/Box";
+import { CardContent, Divider } from "@material-ui/core";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import InboxIcon from '@mui/icons-material/Inbox';
+import DraftsIcon from '@mui/icons-material/Drafts';
+import ListSubheader from '@mui/material/ListSubheader';
+import Collapse from '@mui/material/Collapse';
+import SendIcon from '@mui/icons-material/Send';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import StarBorder from '@mui/icons-material/StarBorder';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Popup from "./Popup";
+
     
 const QUERY_ALL_TASKS = gql `
     query GetAllTodos
@@ -30,8 +55,20 @@ const CREATE_TODO_ITEM = gql`
 
 
 function DisplayData () {
-        
+
+    const [openPopup, setOpenPopup]= useState(false)
     const {categorySearched, setcategorySearched}= useState("")
+
+    const [open, setOpen] = React.useState(true);
+
+    const [expanded, setExpanded] = React.useState(false);
+
+    const handleChange = (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded ? panel : false);
+    };
+
+    const handleClick = () => {
+        setOpen(!open);}
 
     //create Todo states
     const [Task, setTask] = useState("");
@@ -51,6 +88,7 @@ function DisplayData () {
         return (
             <div>
                 <div>
+                    <Container>
                     <TextField 
                         id="outlined-basic" 
                         label="Enter a Task" 
@@ -71,8 +109,14 @@ function DisplayData () {
                         onChange={ (event) => { 
                             setcategory(event.target.value); }}
                     />
-                    <button onClick={() => {
-                        console.log(Task, category)
+                    </Container>
+                    <Button 
+                        variant="contained" 
+                        endIcon={<AddIcon />} 
+                        color="primary"
+                        onClick={() => {
+                            setOpenPopup(true)
+                            console.log(Task, category)
                         createTodo({ 
                             variables: {
                                 input: {Task: Task, category: category},
@@ -83,16 +127,50 @@ function DisplayData () {
                     }}
                     >
                         Create Todo Item
-                    </button>
+                    </Button>
+                    
                 </div>
                 {data && 
                 data.todos.map((todo) => {
+                    var Identify= todo.id
+                    var DoIt= todo.Task
+                    var Cat= todo.category
+                    
                     return (
+                        
                         <div>
-                            <h1>Task: {todo.Task}</h1>
-                            <h1>Category: {todo.category}</h1>
-                            <h1>ID: {todo.id}</h1>
-                        </div>)
+
+                            <div>
+                                <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                                    <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1bh-content"
+                                    id="panel1bh-header"
+                                    >
+                                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
+                                    ID: {Identify}
+                                    </Typography>
+                                    <Typography sx={{ color: 'text.secondary' }}>Category: {Cat}</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                    <Typography>
+                                    Task: {DoIt}
+                                    </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+                                
+                                </div>
+                           
+                                
+                            
+                            <Divider />
+                            <Popup
+                                title="Create Todo"
+                                openPopup={openPopup}
+                                setOpenPopup={setOpenPopup}
+                            >
+                            </Popup>
+                        </div>);
 
                 
                 
@@ -110,11 +188,7 @@ function DisplayData () {
                 
     }
 
+export var Identify;
+export var  DoIt; 
+export var Cat;
 export default DisplayData;
-
-// mutation ($Task: String, $category: String){
-    //createTodo(Task:$Task, category: $category) {
-    //Task
-    //category
-    //}
-  //}

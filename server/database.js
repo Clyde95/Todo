@@ -63,7 +63,7 @@ const createTodoDB = (req, sql, args) => new Promise((resolve, reject) => {
 
 
 const root = {
-  todos: (args, req) => queryDB(req, "select * from todos").then(data => data),
+  todos: (args, req) => queryDB(req, "select * from todos ORDER BY id DESC").then(data => data),
   todo: (args, req) => queryDB(req, "select * from todos where id = ?", [args.id]).then(data => data[0]),
   //updateUserInfo: (args, req) => queryDB(req, "update users SET ? where id = ?", [args, args.id]).then(data => data),
   createTodo: (args, req) => createTodoDB(req, "insert into todos (Task, category) values(?,?);", Object.values(args.input))
