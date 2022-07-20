@@ -176,12 +176,12 @@ function DisplayData () {
                 
         })} 
         <div>
-        <div> 
+        {/* <div> 
                     <input type="text" placeholder="What task do you wanna enter?" 
                         onChange={function (event) { setcategorySearched(event.target.value); }} />
                 
                     <button onClick={fetchCategory}>Fetch the category</button>
-                </div>
+                </div> */}
         </div>
         </div>);
 

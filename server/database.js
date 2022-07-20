@@ -34,6 +34,7 @@ const schema = buildSchema(`
   type Mutation {
     createTodo (input: CreateTodoInput!): Todo
     updateTC(input: updateTCInput!): Todo
+    deleteTodo(id: Int!): Todo
   }
 `);
 
@@ -67,8 +68,8 @@ const root = {
   todo: (args, req) => queryDB(req, "select * from todos where id = ?", [args.id]).then(data => data[0]),
   //updateUserInfo: (args, req) => queryDB(req, "update users SET ? where id = ?", [args, args.id]).then(data => data),
   createTodo: (args, req) => createTodoDB(req, "insert into todos (Task, category) values(?,?);", Object.values(args.input))
-    .then(data => ({ ...data}) )
-  //deleteUser: (args, req) => queryDB(req, "delete from users where id = ?", [args.id]).then(data => data)
+    .then(data => ({ ...data}) ),
+  deleteTodo: (args, req) => queryDB(req, "delete from users where id = ?", [args.id]).then(data => data)
 };
 
 app.use((req, res, next) => {
