@@ -1,7 +1,12 @@
 .App {
   text-align: center;
+  margin-top: 90px;
 }
 
+.Autocomplete {
+  align-items: center;
+  justify-content: center;
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;

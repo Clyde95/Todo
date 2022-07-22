@@ -27,8 +27,8 @@ const schema = buildSchema(`
   }
 
   input updateTCInput {
+    category: String!
     id: Int!
-    Newcategory: String!
   }
 
   type Mutation {
@@ -39,10 +39,10 @@ const schema = buildSchema(`
 `);
 
 const queryDB = (req, sql, args) => new Promise((resolve, reject) => {
-    req.mysqlDb.query(sql, args, (err, rows) => {
+    req.mysqlDb.query(sql, args, async(err, rows) => {
         if (err)
             return reject(err);
-       // rows.changedRows || rows.affectedRows || rows.insertId ? resolve(true) : resolve(rows);
+        //rows.changedRows || rows.affectedRows || rows.insertId ? resolve(true) : resolve(rows);
        resolve(rows )
     });
 });
@@ -62,14 +62,31 @@ const createTodoDB = (req, sql, args) => new Promise((resolve, reject) => {
   })
 });
 
+const updateTodoDB = (req, sql, args) => new Promise((resolve, reject) => {
+  let newId
+  req.mysqlDb.query(sql, args, async(err, rows) => {
+      if (err)
+          return reject(err);
+      console.log(rows.affectedRows)
+     rows.changedRows || rows.affectedRows || rows.insertId ? resolve(true) : resolve(rows)
+     newId=rows.affectedRows
+     let updatedTodo 
+    await queryDB(req, "select * from todos where id = ?", newId).then(data => updatedTodo=data[0])
+    resolve(newTodo)
+    console.log(updatedTodo, "updated Todo")
+
+  })
+});
+
 
 const root = {
   todos: (args, req) => queryDB(req, "select * from todos ORDER BY id DESC").then(data => data),
   todo: (args, req) => queryDB(req, "select * from todos where id = ?", [args.id]).then(data => data[0]),
-  //updateUserInfo: (args, req) => queryDB(req, "update users SET ? where id = ?", [args, args.id]).then(data => data),
+  updateTC: (args, req) => queryDB(req, "UPDATE todos SET category= ?  WHERE id= ?;",  Object.values(args.input))
+  .then(data => ({ ...data}) ), 
   createTodo: (args, req) => createTodoDB(req, "insert into todos (Task, category) values(?,?);", Object.values(args.input))
     .then(data => ({ ...data}) ),
-  deleteTodo: (args, req) => queryDB(req, "delete from users where id = ?", [args.id]).then(data => data)
+  deleteTodo: (args, req) => queryDB(req, "delete from todos where id = ?", [args.id]).then(data => data)
 };
 
 app.use((req, res, next) => {
