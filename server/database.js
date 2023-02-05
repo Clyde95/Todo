@@ -4,6 +4,7 @@ const {graphqlHTTP} = require('express-graphql');
 const { buildSchema } = require('graphql');
 const mysql = require('mysql2');
 const cors = require('cors')
+require('dotenv').config();
 
 const app = express();
 app.use(cors())
@@ -107,8 +108,10 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true,
 }));
 
-app.listen(4000);
+app.listen(process.env.PORT || 4000 , () => {
 
-console.log('Running a GraphQL API server at localhost:4000/graphql');
+  console.log('Running a GraphQL API server at localhost:4000/graphql');
+
+});
 
 //createTodo (Task: String!, category: String!): Boolean
